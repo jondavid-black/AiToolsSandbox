@@ -11,7 +11,7 @@ start_time = time.time()
 logs.append({"time": datetime.now().strftime(time_fmt), "message": "Starting the program."})
 
 # setup the model list
-models = ["mistral", "codebot"]
+models = ["mistral", "mixtral"]
 
 # setup the prompts
 prompts = {}
