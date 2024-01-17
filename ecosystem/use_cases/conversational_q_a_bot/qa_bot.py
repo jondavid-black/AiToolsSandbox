@@ -16,7 +16,8 @@ def generate(prompt, context):
     r = requests.post('http://localhost:11434/api/generate',
                      json={
                          'model': model,
-                         'prompt': prompt
+                         'prompt': prompt,
+                         'context': context
                      },
                      stream=False)
     r.raise_for_status()
@@ -69,7 +70,7 @@ block = gr.Blocks()
 
 with block:
 
-    gr.Markdown("""<h1><center> Dumb Q&A Chatbot </center></h1>
+    gr.Markdown("""<h1><center> Chatty Cathy - A Q&A Chatbot w/ Conversation History </center></h1>
     """)
 
     chatbot = gr.Chatbot()

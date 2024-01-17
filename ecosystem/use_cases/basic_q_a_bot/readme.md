@@ -1,6 +1,8 @@
-# Dumb Q&A AI Bot
+# Basic Mitch Q&A AI Bot
 
 The simplest miminum viable product for a chatbot is a bot that can answer questions. It is not very smart, in that it maintains no conversational memory and has not ability to use data outside the LLM or user prompt, but it can answer questions.  It provides a minimal web ui for simplified user interaction with asking questions and getting answers.
+
+The name "[Basic Mitch](https://www.youtube.com/shorts/q9cP9L0IcgM)" is taken from the [Andy Cooks](https://www.youtube.com/@andy_cooks/featured) youtube channel.
 
 ## Technology
 
@@ -49,18 +51,6 @@ Gradio provides a degree of simplicity which is nice, but is (IMHO) a little con
 These tools provide one of the simplest ways to get started with LLMs using a web ui.  The following diagram shows how the pieces fit together.  In this instance we've automated everything using apython App called ```main.py``` that launches the Ollama server and the Gradio web ui.  The user can then interact with the web ui to ask questions and get answers.  The web ui also logs prompts, responses, and durations to a simple markdown file called ```assistant_log.md```.  The Ollama server can be used to run any LLM model, but in this case we're using the Mistral 7B model.  The ```main.py``` app also provides resource monitoring of CPU, Memory, GPU, and GPU memory during execution in a simple CSV file called ```usage.csv```.
 
 Neither Ollama or Mistral 7B have been modified in any way.  The only modification is the addition of the ```main.py``` app and the ```qa_bot.py``` app that is used by Gradio to provide the web ui.  Even the Gradio app is about as simple as possible, only collecting a user prompt, submitting it to Ollama via a REST API, and displaying the response.  There is no "memory" maintained within Ollama the Mistral 7B model.  In a separate use case we'll look at how to add memory to a model by adding a chat history to the Gradio configuration.
-
-```mermaid
-graph
-    A[User] -- 1. CLI --> B((main.py))
-    B -- 2. CLI serve --> C((Ollama))
-    C -- 3. Read/Load Model --> D((Mistral 7B))
-    B -- 4. Launch Web UI --> E((Gradio))
-    A[User] -- 5. Web UI --> E
-    E -- 6. REST API (Post)  --> C
-    C -- 7. REST Response --> E
-    E -- 8. Web UI --> A
-```
 
 ```mermaid
 sequenceDiagram

@@ -1,4 +1,4 @@
-# Dumb Q&A AI Bot
+# Chatty Cathy Q&A AI Bot with Conversation History
 
 An enhancement to the miminum viable product for a chatbot to answer questions and remember the user conversation. This bot can answer questions and include previous details of the conversation in the user interaction. It is still not very smart, but at least supports refinement based on user feedback.  It provides a minimal web ui for asking questions and getting answers.
 
@@ -10,27 +10,14 @@ An enhancement to the miminum viable product for a chatbot to answer questions a
 
 ## Approach
 
-We can basically take the work from last week and just reuse it, but I'd like to enhance the data collection a bit.
-- Reuse the /ollama/webui code from last week.
-- Add the system monitoring from /ollama/auto_run.
-- Add a top level script to launch and run everything from a single command.
-- Add logging to capture prompts, responses, and response times that outputs in markdown for easier reuse in document creation and sharing.
+This is fundamentally identical to the ```../basic_q_a_bot``` use case, but with mods to the ```qa_bot.py``` to maintain conversation history and provide that as context to the model via the Ollama REST call.
+- Cut-and-paste evrything from the basic_q_a_bot use case into this directory (except the ```readme.md``` obviously).
+- Add a ```chat_history``` variable to the ```qa_bot.py``` script.
+- Add a ```chat_history``` parameter to the ```ollama``` call in the ```qa_bot.py``` script.
+- Run some manual tests and log the results.
 
-## Implementation
+Everything else is unchanged from the basic_q_a_bot use case.
 
-1. Begin monitoring system utilization
-1. If not already running, launch ```ollama serve``` process
-1. Launch gradio web ui (add basic chat_hostory)
+## Observations
 
-## Usage
-
-1. Open web ui in a browser
-1. Manually provide some prompts and see what's returned.
-1. Request a few options for some topic
-1. Request more detail on a returned option without naming it (i.e. option 2, or the last option)
-
-## End
-
-1. Close the browser
-1. Terminate the CLI command (ctrl+c)
-1. Review log to ensure data was captured
+This was very quick to put in place given the original example already had a chat history capability.  Things worked as expected.  Most importantly, the AI clearly maintained context from the previous conversation.  I was able to refer to prior interactions and the AI handled it well.
