@@ -1,0 +1,9 @@
+gradio
+psutil
+GPUtil
+pypdf
+langchain
+langchain-community
+huggingface-hub
+faiss-cpu
+sentence-transformers

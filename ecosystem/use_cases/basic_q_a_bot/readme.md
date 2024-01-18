@@ -20,7 +20,7 @@ Ollama is a open source software tool that allows you to run LLMs on linux.  It 
     ```
 
 ### Mistral 7B
-Mistral 7B is a LLM model trained on the Mistral 7B dataset.  It is available from the [Hugging Face Model Repository](https://huggingface.co/).  The model is downloaded and installed using the following command:
+Mistral 7B is a LLM model trained on the Mistral 7B dataset published under the Apache 2 Open-Source license.  It is available from the [Hugging Face Model Repository](https://huggingface.co/).  The model is downloaded and installed using the following command:
     ```bash
     ollama pull mistral
     ```
