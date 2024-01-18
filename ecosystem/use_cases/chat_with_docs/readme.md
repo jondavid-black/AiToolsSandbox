@@ -91,6 +91,7 @@ Since we're using Homer's work as our documents, I searched the internet for qui
 ## Observations
 
 - Choosing test data (i.e. The Iliad and The Odyssey) that you aren't deeply familiar with makes it difficult to determine if the responses are correct.
+- It's not completely clear to me if the underlying LLM has knowledge of Homer's Iliad and Odyssey or if it's just using the text as a corpus.  I suspect it's just using the text as a corpus, but I'd like to confirm this.
 - The model requires precision in the prompts.  Things like differences in spelling (Hektor vs Hector) have a big impact on the response.
 - This implementation has broken conversation history.  The model doesn't remember the previous conversation.  This is a little disappointing, but understandable given the limited implementation.
 - Overvall run-time performance is good.  The model is responsive and the responses are returned quickly.  This seems to be generally faster than other use cases.  Give the volume of data in the documents, this is a little surprising.
