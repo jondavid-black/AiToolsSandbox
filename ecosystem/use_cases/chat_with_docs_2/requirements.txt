@@ -1,0 +1,7 @@
+gradio
+psutil
+GPUtil
+llama-index
+pypdf
+chromadb
+pysqlite3-binary

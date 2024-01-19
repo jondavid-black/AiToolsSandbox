@@ -53,7 +53,22 @@ Gradio provides a degree of simplicity which is nice, but is (IMHO) a little con
 
 ### LangChain
 
-TODO Describe LangChain here.
+[LangChain](https://python.langchain.com/docs/get_started/introduction) is a python-based library that provides a "simple" API for interacting with LLMs.  It is available from the [LangChain Github Repository](https://github.com/langchain-ai/langchain).  Here's LangChain's description of itself:
+
+> LangChain is a framework for developing applications powered by language models. It enables applications that:
+> - Are context-aware: connect a language model to sources of context (prompt instructions, few shot examples, content to ground its response in, etc.)
+> - Reason: rely on a language model to reason (about how to answer based on provided context, what actions to take, etc.)
+>
+> This framework consists of several parts. 
+> - LangChain Libraries: The Python and JavaScript libraries. Contains interfaces and integrations for a myriad of components, a basic run time for combining these components into chains and agents, and off-the-shelf implementations of chains and agents.
+> - [LangChain Templates](https://github.com/langchain-ai/langchain/blob/master/templates): A collection of easily deployable reference architectures for a wide variety of tasks.
+> - [LangServe](https://github.com/langchain-ai/langserve): A library for deploying LangChain chains as a REST API.
+> - [LangSmith](https://smith.langchain.com/): A developer platform that lets you debug, test, evaluate, and monitor chains built on any LLM framework and seamlessly integrates with LangChain.
+>
+> The LangChain libraries themselves are made up of several different packages. 
+> - [langchain-core](https://github.com/langchain-ai/langchain/blob/master/libs/core): Base abstractions and LangChain Expression Language.
+> - [langchain-community](https://github.com/langchain-ai/langchain/blob/master/libs/community): Third party integrations.
+> - [langchain](https://github.com/langchain-ai/langchain/blob/master/libs/langchain): Chains, agents, and retrieval strategies that make up an application's cognitive architecture.
 
 ## Testing
 

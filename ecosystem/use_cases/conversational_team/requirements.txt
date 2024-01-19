@@ -1,0 +1,3 @@
+pyautogen
+llama-cpp-python
+llama-cpp-python[server]
