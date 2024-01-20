@@ -16,6 +16,8 @@ The secondary use case for GenAI technologies surrounds the creation of software
 
 The GenAI ecosystem is comprised of a number of core elements that are used to create GenAI applications.  These elements are: the model, the model runtime, the model interface, data management, orchestration, and user interface.  The following diagram depicts a sampling of the technologies in each of these areas.
 
+*Note:  If the figues don't render properly in GitHub's Mermaid integration try a cut-and-paste into the [Live Editor](https://mermaid.live/edit).*
+
 ```mermaid
 ---
 title: GenAI Ecosystem Overview
