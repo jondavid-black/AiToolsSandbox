@@ -26,6 +26,7 @@ classDiagram
         class Llama2
         class Mistral7B
         class CodeLlama
+
         class ProprietaryModel
         class OpenAI-GPT4
         class Google-Gemini
@@ -48,9 +49,10 @@ classDiagram
         class openAI-api
     }
 
-    llama-cpp <|.. Ollama
-    llama-cpp <|.. LMStudio
-    llama-cpp <|.. python-llama-cpp
+    llama-cpp <|-- python-llama-cpp
+    web-api <|-- python-llama-cpp
+    web-api <|-- Ollama
+    web-api <|-- LMStudio
     web-api <|-- openAI-api
 
     namespace GenAI_ModelInterface {
@@ -95,20 +97,24 @@ title: GenAI Sample Application Behavior
 sequenceDiagram
     actor User
     
+    box Grey GenAI Front-End Application
     participant GenAI_UserInterface
     participant GenAI_ModelInterface
     participant GenAI_DataManagement
+    end
+    box Grey Gen-AI Back-End Application
     participant GenAI_ModelRuntime
     participant GenAI_Model
+    end
     participant Server
 
     # Start the Runtime and Load the Model
-    Server ->> GenAI_ModelRuntime: Start
+    Server ->> GenAI_ModelRuntime: Start (CLI)
     GenAI_ModelRuntime ->> GenAI_Model: Load
     GenAI_ModelRuntime ->> GenAI_ModelRuntime: Serve API
 
     # Start the User Interface
-    Server ->> GenAI_UserInterface: Start
+    Server ->> GenAI_UserInterface: Start (CLI)
     GenAI_UserInterface ->> GenAI_ModelInterface: Configure
     GenAI_ModelInterface ->> GenAI_DataManagement: Configure
     GenAI_UserInterface ->> GenAI_UserInterface: Serve UI
@@ -122,7 +128,7 @@ sequenceDiagram
         GenAI_UserInterface ->> GenAI_ModelInterface: Retrieve Session Data
         GenAI_ModelInterface ->> GenAI_DataManagement: Retrieve Session Data
         GenAI_DataManagement ->> GenAI_ModelInterface: Provide Vector
-        GenAI_ModelInterface ->> GenAI_ModelRuntime: Submit Prompt and Context
+        GenAI_ModelInterface ->> GenAI_ModelRuntime: Submit Prompt and Context (REST)
         GenAI_ModelRuntime ->> GenAI_Model: Generate Response
         GenAI_Model ->> GenAI_ModelRuntime: Return Response
         GenAI_ModelRuntime ->> GenAI_ModelInterface: Return Response
