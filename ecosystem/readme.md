@@ -80,7 +80,6 @@ classDiagram
         class Cody
     }
 
-    
     WebUI <|-- Gradio
     WebUI <|-- Streamlit
     IdeIntegration <|-- Continue
@@ -214,3 +213,6 @@ Orchestration is the software that is used to define manage the execution of age
 The user interface is the software that is used to interact with the GenAI application.  In reality, there is nothing preventing anyone from creating their own UIs with whatever UI software or frameworks they're comfortable with.  But there are a number of UI frameworks that are commonly used in the GenAI community.  The GenAI focused frameworks provide handy components for common AI related tasks such as providing multi-modal content (i.e. documents, images, audio, video) within the UI.  They also provide common components that support behaviors like chat and chat streaming, without the developer needing to get into the nuiance of low level API handling.  The following are some of the more common UI frameworks that are used in GenAI applications.
 
 - **[Gradio](https://www.gradio.app/)**: Gradio is an open-source Python package that allows you to quickly build a demo or web application for your machine learning model, API, or any arbitary Python function. You can then share a link to your demo or web application in just a few seconds using Gradio's built-in sharing features. No JavaScript, CSS, or web hosting experience needed!  Gradio is used to power the HuggingFace web UI. It is open source and available under the Apache 2.0 license.  See the [Gradio GitHub repository](https://github.com/gradio-app/gradio) for more information.
+- **[Streamlit](https://streamlit.io/)**: Streamlit is an open-source Python library that makes it easy to build beautiful custom web-apps for machine learning and data science.  It is open source and available under the Apache 2.0 license.  Streamlit lets you turn data scripts into shareable web apps in minutes, not weeks. It’s all Python, open-source, and free! See the [Streamlit GitHub repository](https://github.com/streamlit/streamlit) for more information.
+- **[Continue](https://marketplace.visualstudio.com/items?itemName=Continue.continue)**: Continue is the open-source autopilot for software development—an IDE extension that brings the power of ChatGPT to VS Code and JetBrains.  Continue is open source and available under the Apache 2.0 license.  See the [Continue GitHub repository](https://github.com/continuedev/continue) for more information.
+- **[coLLaMA](https://github.com/iohub/coLLaMA)**: VSCode AI coding assistant powered by self-hosted llama.cpp endpoint.  coLLaMA is short for Cody Llama. Cody is a free, open-source AI coding assistant that can write and fix code, provide AI-generated autocomplete, and answer your coding questions.  It is open source and available under the Apache 2.0 license.  See the [coLLaMA GitHub repository](https://github.com/iohub/coLLaMA) for more information.
