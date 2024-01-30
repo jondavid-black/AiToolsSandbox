@@ -1,0 +1,6 @@
+gradio
+psutil
+GPUtil
+llama-cpp-python
+llama-cpp-python[server]
+langchain
