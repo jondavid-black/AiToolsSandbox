@@ -27,10 +27,10 @@ pip install -r requirements.txt
 
 ## Running the Model
 
-I did this as I had done for previous examples.  Simply download the GGUF file you want to run and then run the server.
+I did this as I had done for previous examples.  Simply download the GGUF file you want to run and then run the server.  In this instance, I'm bumping up the token size to 8192 because I encountered token threshold errors in testing.
 
 ```bash
-python3 -m llama_cpp.server --model ./mistral-7b-instruct-v0.2.Q5_K_S.gguf
+python3 -m llama_cpp.server --model ./mistral-7b-instruct-v0.2.Q5_K_S.gguf --n_ctx 8192
 ```
 
 ## Running the UI
@@ -41,11 +41,13 @@ This is where things got difficult.  Llama_cpp_server supports the new OpenAI v1
 python3 ./qa_bot.py
 ```
 
-## TODO
+## Observations
+- I'm pleased gradio provides a simple user auth capability, I can't figure out how to get the user id from the gradio authentication.  Surely this is possible.
+- I can't figure out how to setup a streaming resposne in gradio without using the ChatInterface.  This is probably okay for now, but it means we can't do custom layouts.
+- Sometimes the model seems to get stuck in a loop.  It just keeps repeating content...usually afterthoughts.
+- Streaming the response is a pretty dramatic improvement in user experience.  The ability to stop it when it gets into a loop is key.
+- I encountered errors running out of tokens in the API when my history got too long.  At least the error message was clear.  This is why I bumped up the token count from the default 2K to 8K.  I had it do some pretty big stuff with the 8K setting and it didn't error out.
 
-I still need to get logging added, as well as some metric collection.
-
-I did test history and it worked, but now we've got a token size problem to fix.  At least the error message was clear.  Can we adjust something in lamma_cpp.server or our client setup to increase token size?
 After a few prompts I got the following error in the qa_bot client:    
 ```bash
 openai.BadRequestError: Error code: 400 - {'error': {'message': "This model's maximum context length is 2048 tokens. However, you requested 2078 tokens (2078 in the messages, None in the completion). Please reduce the length of the messages or completion.", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}
@@ -86,4 +88,11 @@ Traceback (most recent call last):
 ValueError: Requested tokens (2078) exceed context window of 2048
 INFO:     127.0.0.1:34140 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
 ```
-
+- It took some sleuthing, but I finally figured out how to get the user id from the gradio authentication.  The secret sause is to grab the `gr.Request` object as the last parameter to an invoked function.  It's not in the documentation, but I found it in the a GitHub issue discussion.  The QA bot now logs the user id and the user's message.  This will be helpful for future analysis.  I wonder what else is in that `gr.Request`?
+- Although I intended to setup a main app that would launch everything and collect usage, I don't know how to find a process by anything other than the process name.  Since llama-cpp-python is just running "python" I can't differentiate it from other python processes.  This probably isn't important right now as I can just watch the lines in task manager for my manual testing, but we need a way to monitor usage in the future.
+- The Gradio documentation isn't all that great, particularly the API documentation.  While it has been very useful (especially the guides and examples), the API documentation seems to include content and parameters that just don't exist...and some things that do exist aren't documented.
+- I really like the avatars in the chat window, but I'm not a huge fan of what I'm using at the moment.  I just generated a copule things using Midjourney...but we need to do better.
+- I'm not using GPU acceleration, and I'm actually quite impressed with the performance.  Some of this is due to the switch to streaming (i.e. watching output appear incrementally feels much better than just waiting for one big output), but I think some is due to llama-cpp-python's performance.
+- The system prompt I'm using certainly has a powerful impact on performance, but I'm not completely loving what's there.  Emphasis on being correct and concise seems to be extremely important.  The whole "OK" thing doesn't really help and sometimes confuses things.  It's probably worth the effort to research and test different system prompts.
+- I'm pleasantly surprised by the responses provided by the model.  I'm not really doing anything challenging, but in general it does a good job of providing a response that is relevant to the prompt and correct.  It would be good to create a better test suite to evaluate this.
+- If I close the browser tab and then re-open the URL in another tab, the user login persists but the chat history is gone.  This is probably good for now, but we may want to consider saving sessions in the future.

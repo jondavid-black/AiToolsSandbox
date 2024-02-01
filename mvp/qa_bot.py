@@ -1,4 +1,5 @@
-import openai
+from datetime import datetime
+import time
 from openai import OpenAI
 import gradio as gr
 
@@ -7,39 +8,33 @@ import gradio as gr
 
 client = OpenAI(base_url="http://127.0.0.1:8000/v1/", api_key="Not-a-real-key")
 
-system_prompt = "You are a helpful AI assistant named Tom.  You must always provide correct and complete responses to the user's requests.  If the user provides information rather than a question or a command, simply reply with OK."
+system_prompt = "You are a helpful AI assistant named Tom.  You must always provide correct, complete, and concise responses to the user's requests.  Once you've answered the user's request, end your feedback.  If the user provides information rather than a question or a command, simply reply with OK."
 
-# def predict(message, history):
-#     history_openai_format = []
-#     for human, assistant in history:
-#         history_openai_format.append({"role": "user", "content": human })
-#         history_openai_format.append({"role": "assistant", "content":assistant})
-#     history_openai_format.append({"role": "user", "content": message})
+time_fmt = "%Y-%m-%d %H:%M:%S"
 
-#     completion = openai.chat.completions.create(
-#         model="gpt-4",
-#         messages=[
-#             {
-#                 "role": "user",
-#                 "content": message,
-#             }, {
-#                 "role": "system",
-#                 "content": system_prompt,
-#             }
-#         ],
-#     )
+users = {
+    "Jack": "password",
+    "Jill": "password"
+}
 
-#     response = completion.choices[0].message.content
-#     print(f"completion: {completion}")
-#     print(f"response: {response}")
+def auth_user(username, password):
+    if username in users and password == users[username]:
+        print(f"Successful login for user {username}")
+        return True
+    else:
+        print(f"Failed login for user {username}")
+        return False
 
-#     partial_message = ""
-#     for chunk in response:
-#         if len(chunk['choices'][0]['delta']) != 0:
-#             partial_message = partial_message + chunk['choices'][0]['delta']['content']
-#             yield partial_message
+def append_to_log(prompt, response, duration, user):
+    with open('assistant_log.md', 'a') as f:
+        log_prompt = "> " + prompt.replace('\n', '\n> ')
+        log_response = ">> " + response.replace('\n', '\n>> ')
+        minutes, seconds = divmod(duration, 60)
+        f.write(f"# Log Entry {datetime.now().strftime(time_fmt)} - User {user} - Duration {minutes}m {seconds:.2f}s\n\n{log_prompt}\n{log_response}\n\n")
+        f.flush()
 
-def predict(message, history):
+def predict(message, history, request: gr.Request):
+    prompt_start = time.time()
     history_openai_format = []
     for human, assistant in history:
         history_openai_format.append({"role": "user", "content": human })
@@ -54,12 +49,28 @@ def predict(message, history):
         stream=True
     )
 
-    print(f"stream: {stream}")
-
     partial_message = ""
     for chunk in stream:
         if chunk.choices[0].delta.content is not None:
             partial_message = partial_message + chunk.choices[0].delta.content
             yield partial_message
 
-gr.ChatInterface(predict).launch()
+    prompt_end = time.time()
+    append_to_log(message, partial_message, prompt_end - prompt_start, request.username)
+
+# Setup ChatInterface components
+chatbot = gr.Chatbot(height=800, avatar_images=("human.jpg", "ai-bot.jpg"))
+clear_btn = gr.Button(value="Clear Chat History", variant="secondary", size="sm")
+prompt = gr.Textbox(label="User Prompt", placeholder="Enter your request here, and hit <enter>", info="This is the user prompt.  Enter your request here and the AI assistant will respond.")
+submit_btn = gr.Button(value="Submit", variant="primary", size="sm")
+
+# Lanuch the ChatInterface
+gr.ChatInterface(predict,
+                 title="AI Assistant", 
+                 description="Your helpful AI chat bot assistant.  How can I help you today?", 
+                 chatbot=chatbot, 
+                 textbox=prompt, 
+                 submit_btn=submit_btn,
+                 clear_btn=clear_btn,
+                 retry_btn=None,
+                 undo_btn=None).launch(auth=auth_user)
