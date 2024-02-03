@@ -124,8 +124,11 @@ I [forked and ran the GitHub security scans on the Gradio](https://github.com/jo
     - The last `Medium` finding could present a challenge in the future.  It's pulling a javascript library from the web called `iframeResizer.contentWindow.min.js`.  It would be best to pull, scan, and pre-load this dependency in the future. 
 
 I also [forked and ran the GitHub security scans on the llama-cpp-python](https://github.com/jondavid-black/llama-cpp-python) baseline.  Here's all the findings:
-![Llama-cpp-python Code Security Scan](./img/llama-cpp-python_security_scan.png)
+![Llama-cpp-python Code Security Scan](./img/llama-cpp-python-security-scan.png)
 
 - There are no security advisories published for llama-cpp-pyton.
 - There are no Dependabot alerts.
 - All good!  No code scan security findings.
+
+Finally I ran a virus scan of the Mistral 7B instruct GGUF file.  It came back clean.
+![Mistral 7B Instruct Virus Scan](./img/mistral_av_scan.png)
