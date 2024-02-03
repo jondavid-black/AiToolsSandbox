@@ -108,3 +108,24 @@ INFO:     127.0.0.1:34140 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
 - I modified the system prompt to remove the AI's name and the instructions to say "OK".  I'm no longer getting the occasional weird "OK" responses.
 - To get the desired Layout you want, you have to mess around with Colums, Rows, and attributes on your components.  The min_width on the component is very important as the default value is 320, so smaller items will have large horizontal spacing if you don't adjust it.
 - Overall, I'm relatively pleased with the MVP layout.  It took a while to push through the learning curve, but I'm getting more familiar with the Gradio API and I'm getting the layout I want.  I'm not sure if I'll stick with this layout, but it's a good starting point.
+
+
+## Security
+
+I [forked and ran the GitHub security scans on the Gradio](https://github.com/jondavid-black/gradio) baseline.  Here's all the findings:
+![Gradio Code Security Scan](./img/gradio_security_scan.png)
+
+- There are no security advisories published for Gradio.
+- There are no Dependabot alerts.
+- There are some code scanning findings:
+    - All the `Critial` findings have to do with their GitHub Actions workflows and should not be relevant to the user.
+    - The `High` findings relate to utility functions use of hashing and regex.  Initial review of the code doesn't raise any concerns here as these aren't actually used for security or privacy concerns.
+    - The last `High` finding is about the potential for a "bad actor" to manipulate the `style` parameter for rendering.  Since this is somethign a developer would have to do as part of the API, I don't see a concern here.
+    - The last `Medium` finding could present a challenge in the future.  It's pulling a javascript library from the web called `iframeResizer.contentWindow.min.js`.  It would be best to pull, scan, and pre-load this dependency in the future. 
+
+I also [forked and ran the GitHub security scans on the llama-cpp-python](https://github.com/jondavid-black/llama-cpp-python) baseline.  Here's all the findings:
+![Llama-cpp-python Code Security Scan](./img/llama-cpp-python_security_scan.png)
+
+- There are no security advisories published for llama-cpp-pyton.
+- There are no Dependabot alerts.
+- All good!  No code scan security findings.
