@@ -2,13 +2,14 @@ from datetime import datetime
 import time
 from openai import OpenAI
 import gradio as gr
+from mvp_interface import MvpInterface
 
 # openai.api_key = "Not-a-real-key"  # Replace with your key
 # openai.base_url = "http://127.0.0.1:8000/v1/"
 
 client = OpenAI(base_url="http://127.0.0.1:8000/v1/", api_key="Not-a-real-key")
 
-system_prompt = "You are a helpful AI assistant named Tom.  You must always provide correct, complete, and concise responses to the user's requests.  Once you've answered the user's request, end your feedback.  If the user provides information rather than a question or a command, simply reply with OK."
+system_prompt = "You are a helpful AI engineering assistant.  You must always provide correct, complete, and concise responses to the user's requests.  Once you've answered the user's request, end your feedback."
 
 time_fmt = "%Y-%m-%d %H:%M:%S"
 
@@ -43,9 +44,9 @@ def predict(message, history, request: gr.Request):
     history_openai_format.append({"role": "user", "content": message})
 
     stream = client.chat.completions.create(
-        model='gpt-3.5-turbo',
+        model='mistral-7B-instruct',
         messages= history_openai_format,
-        temperature=0.0,
+        temperature=0.2,
         stream=True
     )
 
@@ -53,24 +54,36 @@ def predict(message, history, request: gr.Request):
     for chunk in stream:
         if chunk.choices[0].delta.content is not None:
             partial_message = partial_message + chunk.choices[0].delta.content
+            # print(f"Partial message: {partial_message}")
             yield partial_message
 
     prompt_end = time.time()
     append_to_log(message, partial_message, prompt_end - prompt_start, request.username)
 
-# Setup ChatInterface components
-chatbot = gr.Chatbot(height=800, avatar_images=("human.jpg", "ai-bot.jpg"))
-clear_btn = gr.Button(value="Clear Chat History", variant="secondary", size="sm")
-prompt = gr.Textbox(label="User Prompt", placeholder="Enter your request here, and hit <enter>", info="This is the user prompt.  Enter your request here and the AI assistant will respond.")
-submit_btn = gr.Button(value="Submit Prompt", variant="primary", size="sm")
+def vote(data: gr.LikeData):
+    if data.liked:
+        print("You upvoted this response: " + data.value)
+    else:
+        print("You downvoted this response: " + data.value)
 
-# Lanuch the ChatInterface
-gr.ChatInterface(predict,
-                 title="AI Assistant", 
-                 description="Your helpful AI chat bot assistant.  How can I help you today?", 
-                 chatbot=chatbot, 
-                 textbox=prompt, 
-                 submit_btn=submit_btn,
-                 clear_btn=clear_btn,
-                 retry_btn=None,
-                 undo_btn=None).launch(auth=auth_user)
+def clear_content(input):
+    return ""
+
+# Setup ChatInterface components
+chatbot = gr.Chatbot(height=600, avatar_images=("human.jpg", "ai-bot.jpg"), scale=7)
+clear = gr.Button(value="🗑️  Clear History", variant="secondary", size="sm", scale=1)
+prompt = gr.Textbox(label="User Prompt", placeholder="Enter your request here, and hit <enter>",  scale=7)
+submit = gr.Button(value="▶️  Submit", variant="primary", size="sm", scale=1)
+
+# Lanuch the MvpInterface
+MvpInterface(predict,
+            title="AI Engineering Assistant", 
+            image="ai-bot.jpg",
+            description="Your helpful AI chat bot assistant.  How can I help you today?", 
+            chatbot=chatbot, 
+            textbox=prompt, 
+            submit_btn=submit,
+            clear_btn=clear,
+            retry_btn=None,
+            undo_btn=None,
+            like=vote).launch()

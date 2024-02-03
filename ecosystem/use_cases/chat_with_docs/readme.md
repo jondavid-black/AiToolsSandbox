@@ -112,3 +112,6 @@ Since we're using Homer's work as our documents, I searched the internet for qui
 - Overvall run-time performance is good.  The model is responsive and the responses are returned quickly.  This seems to be generally faster than other use cases.  Give the volume of data in the documents, this is a little surprising.
 
 If I find some time, I'd like to come back to this use case and rework it a bit.  I think the Ollama example may be a better starting point.  I'd like to see what it would take to add a UI component that allows the user to upload a document and then have the AI assistant read the document and then be able to converse about the document.  I think this would be a more interesting use case and would be a better demonstration of the capabilities of the LLM.  I'd also like to try and find some document content that I'm more familiar with so I can better evaluate the responses.
+
+## After-Thought
+While I was testing some other configurations that don't use a RAG data set, I asked the model about Homer's Iliad and Odyssey.  It turns out the base model already knows these tests.  This really needs to be tested again with some unique (i.e. created) content to evaluate whether or not it is working properly.

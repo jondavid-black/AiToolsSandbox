@@ -123,3 +123,6 @@ To create a public link, set `share=True` in `launch()`.
 - I tried to kill the application using CTRL-C while it was loading the PDFs, but it didn't work immediately.  When it finally stopped, it put the system in a strange state.  Initially I tried to kill and restart WSL, but WSL would not restart.  I then had to reboot my machine to recover...which worked.
 - Initial conclusion is that llama-index has promise, but feels less mature than LangChain.  The documentation looks really good at first glance, but the deeper you get the less useful / complete it becomes.  If you're working in their pre-defined expectations it seems ok, but doing anything different (i.e. wanting history in a Q&A session over some docs) doesn't seem to work.
 - This setup creates a ```chroma_db``` folder that is large (163.11 MB).  When I tried to commit it to GitHub it failed due to exceeding max file size limite.  I just deleted it manually.  In the future we'll need to setup vector stores in a way that doesn't put things into the repo(s).
+
+## After-Thought
+While I was testing some other configurations that don't use a RAG data set, I asked the model about Homer's Iliad and Odyssey.  It turns out the base model already knows these tests.  This really needs to be tested again with some unique (i.e. created) content to evaluate whether or not it is working properly.
