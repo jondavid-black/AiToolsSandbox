@@ -71,9 +71,10 @@ def clear_content(input):
 
 # Setup ChatInterface components
 chatbot = gr.Chatbot(height=600, avatar_images=("human.jpg", "ai-bot.jpg"), scale=7)
-clear = gr.Button(value="🗑️  Clear History", variant="secondary", size="sm", scale=1)
+clear = gr.Button(value="🗑️", variant="secondary", size="sm", scale=1)
 prompt = gr.Textbox(label="User Prompt", placeholder="Enter your request here, and hit <enter>",  scale=7)
-submit = gr.Button(value="▶️  Submit", variant="primary", size="sm", scale=1)
+submit = gr.Button(value="▶️", variant="primary", size="sm", scale=1)
+stop = gr.Button(value="🛑", variant="stop", size="sm", scale=1)
 
 # Lanuch the MvpInterface
 MvpInterface(predict,
@@ -83,7 +84,8 @@ MvpInterface(predict,
             chatbot=chatbot, 
             textbox=prompt, 
             submit_btn=submit,
+            stop_btn=stop,
             clear_btn=clear,
             retry_btn=None,
             undo_btn=None,
-            like=vote).launch()
+            like=vote).launch(auth=auth_user)
