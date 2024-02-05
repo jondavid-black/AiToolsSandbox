@@ -60,11 +60,11 @@ def predict(message, history, request: gr.Request):
     prompt_end = time.time()
     append_to_log(message, partial_message, prompt_end - prompt_start, request.username)
 
-def vote(data: gr.LikeData):
+def vote(data: gr.LikeData, request: gr.Request):
     if data.liked:
-        print("You upvoted this response: " + data.value)
+        print(f"{request.username} upvoted this response: {data.value}")
     else:
-        print("You downvoted this response: " + data.value)
+        print(f"{request.username} downvoted this response: {data.value}")
 
 def clear_content(input):
     return ""
@@ -80,7 +80,7 @@ stop = gr.Button(value="🛑", variant="stop", size="sm", scale=1)
 MvpInterface(predict,
             title="AI Engineering Assistant", 
             image="ai-bot.jpg",
-            description="Your helpful AI chat bot assistant.  How can I help you today?", 
+            description="Your helpful AI engineering chat bot assistant.  How can I help you today?", 
             chatbot=chatbot, 
             textbox=prompt, 
             submit_btn=submit,
@@ -88,4 +88,12 @@ MvpInterface(predict,
             clear_btn=clear,
             retry_btn=None,
             undo_btn=None,
+            # This js parameter sets the UI to "dark mode"...which I hacked out of the theme builder
+            js="""() => {
+            if (document.querySelectorAll('.dark').length) {
+                document.querySelectorAll('.dark').forEach(el => el.classList.remove('dark'));
+            } else {
+                document.querySelector('body').classList.add('dark');
+            }
+        }""",
             like=vote).launch(auth=auth_user)
