@@ -4,3 +4,10 @@ GPUtil
 llama-cpp-python
 llama-cpp-python[server]
 langchain
+uvicorn
+anyio
+starlette
+sse_starlette
+starlette_context
+fastapi
+pydantic_settings

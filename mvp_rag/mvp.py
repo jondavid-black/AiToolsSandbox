@@ -1,8 +1,17 @@
+import os
 from datetime import datetime
 import time
 from openai import OpenAI
 import gradio as gr
 from mvp_interface import MvpInterface
+from langchain_community.document_loaders import UnstructuredMarkdownLoader
+from langchain_community.document_loaders.merge import MergedDataLoader
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import LlamaCppEmbeddings
+from langchain.memory import ConversationBufferMemory
+from langchain_core.prompts import PromptTemplate
+from langchain.chains import ConversationalRetrievalChain
+from langchain_openai import ChatOpenAI
 
 # openai.api_key = "Not-a-real-key"  # Replace with your key
 # openai.base_url = "http://127.0.0.1:8000/v1/"
@@ -17,6 +26,8 @@ users = {
     "Jack": "password",
     "Jill": "password"
 }
+
+retriever = None
 
 def auth_user(username, password):
     if username in users and password == users[username]:
@@ -34,31 +45,32 @@ def append_to_log(prompt, response, duration, user):
         f.write(f"# Log Entry {datetime.now().strftime(time_fmt)} - User {user} - Duration {minutes}m {seconds:.2f}s\n\n{log_prompt}\n{log_response}\n\n")
         f.flush()
 
+def initialize_rag():
+    print("Initializing RAG")
+    doc_path = "./docs_aac"
+    md_loaders = []
+    for root, dirs, files in os.walk(doc_path):
+        for file in files:
+            if file.endswith('.md'):
+                print(os.path.join(root, file))
+                md_loaders.append(UnstructuredMarkdownLoader(os.path.join(root, file)))
+
+    loader = MergedDataLoader(md_loaders)
+    data = loader.load()
+
+    vectorstore = db = FAISS.from_documents(data, LlamaCppEmbeddings(model_path="./model/mistral-7b-openorca.Q5_K_M.gguf"))
+    retriever = vectorstore.as_retriever()
+    return retriever
+
 def predict(message, history, request: gr.Request):
     prompt_start = time.time()
-    history_openai_format = []
-    for human, assistant in history:
-        history_openai_format.append({"role": "user", "content": human })
-        history_openai_format.append({"role": "assistant", "content":assistant})
-    history_openai_format.append({"role": "system", "content": system_prompt})
-    history_openai_format.append({"role": "user", "content": message})
-
-    stream = client.chat.completions.create(
-        model='mistral',
-        messages= history_openai_format,
-        temperature=0.2,
-        stream=True
-    )
-
-    partial_message = ""
-    for chunk in stream:
-        if chunk.choices[0].delta.content is not None:
-            partial_message = partial_message + chunk.choices[0].delta.content
-            # print(f"Partial message: {partial_message}")
-            yield partial_message
+    response = (chain({"question": message, "chat_history": history}))
 
     prompt_end = time.time()
-    append_to_log(message, partial_message, prompt_end - prompt_start, request.username)
+    # for key, value in response.items():
+    #     print(f"{key}: {value}\n")
+    # append_to_log(message, answer, prompt_end - prompt_start, request.username)
+    return response["answer"]
 
 def vote(data: gr.LikeData, request: gr.Request):
     if data.liked:
@@ -68,6 +80,30 @@ def vote(data: gr.LikeData, request: gr.Request):
 
 def clear_content(input):
     return ""
+
+# setup retrieval augmented generation (RAG)
+retriever = initialize_rag()
+
+# setup memory
+memory = ConversationBufferMemory(
+            memory_key="chat_history",
+            max_len=50,
+            return_messages=True,
+        )
+
+# base_url="http://127.0.0.1:11434/v1/", api_key="Not-a-real-key"
+llm = ChatOpenAI(
+    openai_api_base="http://127.0.0.1:11434/v1/", 
+    openai_api_key="Not-a-real-key", 
+    model_name="mistral", 
+    temperature=0.2)
+
+chain = ConversationalRetrievalChain.from_llm(
+            llm=llm,
+            retriever=retriever,
+            memory=memory,
+            # prompt_template=PROMPT,
+        )
 
 # Setup ChatInterface components
 chatbot = gr.Chatbot(height=600, avatar_images=("human.jpg", "ai-bot.jpg"), scale=7)
@@ -96,4 +132,4 @@ MvpInterface(predict,
                 document.querySelector('body').classList.add('dark');
             }
         }""",
-            like=vote).launch(auth=auth_user)
+            like=vote).launch()

@@ -1,0 +1,9 @@
+gradio
+openai
+langchain
+langchain-community
+unstructured
+faiss-cpu
+llama-cpp-python
+markdown
+langchain-openai
