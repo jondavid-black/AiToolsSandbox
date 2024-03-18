@@ -7,3 +7,4 @@ faiss-cpu
 llama-cpp-python
 markdown
 langchain-openai
+pypdf

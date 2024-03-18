@@ -6,12 +6,15 @@ import gradio as gr
 from mvp_interface import MvpInterface
 from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain_community.document_loaders.merge import MergedDataLoader
+from langchain.document_loaders import PyPDFDirectoryLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import LlamaCppEmbeddings
 from langchain.memory import ConversationBufferMemory
 from langchain_core.prompts import PromptTemplate
 from langchain.chains import ConversationalRetrievalChain
 from langchain_openai import ChatOpenAI
+from langchain.retrievers import MergerRetriever
 
 # openai.api_key = "Not-a-real-key"  # Replace with your key
 # openai.base_url = "http://127.0.0.1:8000/v1/"
@@ -46,20 +49,22 @@ def append_to_log(prompt, response, duration, user):
         f.flush()
 
 def initialize_rag():
-    print("Initializing RAG")
-    doc_path = "./docs_aac"
-    md_loaders = []
-    for root, dirs, files in os.walk(doc_path):
-        for file in files:
-            if file.endswith('.md'):
-                print(os.path.join(root, file))
-                md_loaders.append(UnstructuredMarkdownLoader(os.path.join(root, file)))
+    rag_init_start = time.time()
 
-    loader = MergedDataLoader(md_loaders)
-    data = loader.load()
+    embedding_model = LlamaCppEmbeddings(model_path="./model/mistral-7b-openorca.Q5_K_M.gguf")
 
-    vectorstore = db = FAISS.from_documents(data, LlamaCppEmbeddings(model_path="./model/mistral-7b-openorca.Q5_K_M.gguf"))
-    retriever = vectorstore.as_retriever()
+    # AaC documentation
+    aac_vectorstore = FAISS.load_local("aac_vectorstore", embedding_model, allow_dangerous_deserialization=True)
+    aac_retriever = aac_vectorstore.as_retriever()
+
+    # SysML v2 documentation
+    sysml_vectorstore = FAISS.load_local("sysml_vectorstore", embedding_model, allow_dangerous_deserialization=True)
+    sysml_retriever = sysml_vectorstore.as_retriever()
+
+    retriever = MergerRetriever(retrievers=[aac_retriever, sysml_retriever])
+
+    rag_init_end = time.time()
+    print(f"RAG initialization took {rag_init_end - rag_init_start} seconds")
     return retriever
 
 def predict(message, history, request: gr.Request):
